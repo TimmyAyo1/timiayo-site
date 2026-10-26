@@ -1,0 +1,117 @@
+/* =========================================================
+   DESIGN TOKENS
+   Like an engineering standard: every colour is defined ONCE
+   here, and the rest of the site refers to it by name.
+   Change a value here and it changes everywhere it's used.
+   ========================================================= */
+:root {
+  --paper: #fbfaf6;   /* page background */
+  --ink: #161817;     /* main text */
+  --muted: #6c706b;   /* secondary text */
+  --line: #d8d8d2;    /* borders and rules */
+  --soft: #f0efe9;    /* subtle fills */
+  --grid: rgba(22, 24, 23, 0.055); /* grid-paper lines */
+  --accent: #ff653d;  /* the orange */
+
+  --sans: var(--font-sans), system-ui, sans-serif;
+  --mono: var(--font-mono), ui-monospace, monospace;
+  --hand: var(--font-hand), cursive;
+}
+
+/* Dark mode: same token NAMES, different VALUES.
+   Components never change; only the standard does. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #161716;
+    --ink: #f3f2ee;
+    --muted: #a7aba6;
+    --line: #3c3f3b;
+    --soft: #222421;
+    --grid: rgba(243, 242, 238, 0.045);
+    --accent: #ff7957;
+    color-scheme: dark;
+  }
+}
+
+/* =========================================================
+   BASE
+   ========================================================= */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Grid paper: a fixed layer behind the page, strongest at the
+   edges and faint in the middle where the text sits. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(90deg, #000 0%, rgba(0,0,0,.18) 24%, rgba(0,0,0,.18) 76%, #000 100%);
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* =========================================================
+   SHARED HELPERS
+   ========================================================= */
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 24px; }
+
+.mono {
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.sq {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* =========================================================
+   HERO (temporary home for Day 2; moves into its own
+   component file on Day 3)
+   ========================================================= */
+.hero { padding-block: 88px 56px; }
+
+h1 {
+  font-size: clamp(44px, 8.4vw, 104px);
+  line-height: 0.92;
+  letter-spacing: -0.065em;
+  font-weight: 500;
+  margin: 40px 0 22px;
+  max-width: 960px;
+}
+h1 .soft { color: var(--muted); }
+
+.sub {
+  font-family: var(--mono);
+  font-size: clamp(14px, 1.6vw, 17px);
+  margin: 0;
+}
+.sub::before {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: var(--accent);
+  margin-right: 12px;
+}

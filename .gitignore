@@ -1,0 +1,10 @@
+# Installed packages: rebuilt from package.json with "npm install"
+node_modules/
+
+# Build output: Next.js and Vercel regenerate these
+.next/
+out/
+
+# Local secrets and system files
+.env*.local
+.DS_Store
