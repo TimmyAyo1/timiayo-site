@@ -2,6 +2,7 @@
 // Anything here (fonts, <html>, <body>) is shared by every page on the site.
 import { Manrope, IBM_Plex_Mono, Caveat } from "next/font/google";
 import "./globals.css";
+import GridLife from "@/components/GridLife";
 
 // next/font downloads the fonts at build time and serves them from your own
 // site, so visitors never wait on Google and the text doesn't jump on load.
@@ -34,7 +35,16 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {/* Background grid paper: horizontal lines, vertical lines, and
+            GridLife (pens and construction marks on a canvas). Purely decorative, so hidden from screen readers. */}
+        <div className="bg-grid" aria-hidden="true">
+          <i className="h" />
+          <i className="v" />
+          <GridLife />
+        </div>
+        {children}
+      </body>
     </html>
   );
 }

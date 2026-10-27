@@ -68,19 +68,29 @@ body {
 }
 
 /* Grid paper: a fixed layer behind the page, strongest at the
-   edges and faint in the middle where the text sits. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 24px 24px;
+   edges and faint in the middle where the text sits.
+   On load the lines DRAW themselves in (horizontals sweep across,
+   verticals drop down). Then GridLife keeps the grid at work. */
+:root { --cell: 56px; } /* size of one grid square */
+
+.bg-grid {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
   mask-image: linear-gradient(90deg, #000 0%, rgba(0,0,0,.18) 24%, rgba(0,0,0,.18) 76%, #000 100%);
 }
+.bg-grid .h, .bg-grid .v { position: absolute; inset: 0; }
+.bg-grid .h {
+  background: linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / var(--cell) var(--cell);
+  animation: draw-across 2.6s cubic-bezier(.6,0,.2,1) both;
+}
+.bg-grid .v {
+  background: linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / var(--cell) var(--cell);
+  animation: draw-down 2.6s .35s cubic-bezier(.6,0,.2,1) both;
+}
+@keyframes draw-across { from { clip-path: inset(0 100% 0 0); } }
+@keyframes draw-down   { from { clip-path: inset(0 0 100% 0); } }
+
+/* The living layer (components/GridLife.js) */
+.grid-life { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 a { color: inherit; text-decoration: none; }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -497,10 +507,49 @@ h1 .soft { color: var(--muted); }
 @keyframes hop { 0%, 100% { transform: none; } 45% { transform: translateY(-5px); } }
 
 /* =========================================================
+   TOUCH SCREENS
+   Phones have no hover, so scrolling does the job instead:
+   things light up as they pass through the middle of the screen.
+   ========================================================= */
+@media (hover: none) {
+  @supports (animation-timeline: view()) {
+    /* Tool logos take their brand colour as they cross the screen */
+    .tools li svg {
+      animation: brand-pass linear both;
+      animation-timeline: view();
+      animation-range: cover 25% cover 75%;
+    }
+    /* Build cards: the orange line draws across as each card arrives */
+    .build::before {
+      animation: line-in linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 45%;
+    }
+  }
+  /* A pressed card or link gives instant feedback */
+  .build:active, .entry:active, .channel:active { background: var(--soft); }
+  .elsewhere .channel:active { background: color-mix(in srgb, var(--paper) 10%, transparent); }
+}
+@keyframes brand-pass { 0%, 100% { color: var(--muted); } 35%, 65% { color: var(--brand); } }
+@keyframes line-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Reading progress: a thin orange line under the top bar that fills
+   as you scroll (phones and narrow screens, where the side index is hidden). */
+@media (max-width: 1279px) {
+  @supports (animation-timeline: scroll()) {
+    .bar::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+      background: var(--accent); transform-origin: left;
+      animation: line-in linear both; animation-timeline: scroll(root);
+    }
+  }
+}
+
+/* =========================================================
    PHONES
    ========================================================= */
 @media (max-width: 760px) {
-  body::before { mask-image: none; opacity: 0.5; }
+  .bg-grid { mask-image: none; opacity: 0.5; }
   .hero { padding-block: 56px 40px; }
   .intro, .sec-head, .about, .about-copy { grid-template-columns: 1fr; gap: 20px; }
   .jump { justify-self: start; }
