@@ -1,16 +1,25 @@
-// page.js inside /app = the homepage ("/").
-// Day 2 is a walking skeleton: just enough to prove the pipeline works.
-// On Day 3 this gets split into components (Header, Hero, Path, Log...).
+// The homepage is now just an ASSEMBLY DRAWING: it lists the parts
+// in order. Each part lives in its own file in /components.
+import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import Currently from "@/components/Currently";
+import Log from "@/components/Log";
+import Builds from "@/components/Builds";
+import About from "@/components/About";
+import Elsewhere from "@/components/Elsewhere";
+
 export default function Home() {
   return (
-    <main className="wrap hero">
-      <p className="mono">
-        <span className="sq" /> Logbook · Vol. 01
-      </p>
-      <h1>
-        Engineer by training, <span className="soft">builder by habit.</span>
-      </h1>
-      <p className="sub">I also write code. Notes on both, kept here.</p>
-    </main>
+    <>
+      <Header />
+      <main id="top">
+        <Hero />
+        <Currently />
+        <Builds />
+        <Log />
+        <About />
+        <Elsewhere />
+      </main>
+    </>
   );
 }

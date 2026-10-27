@@ -11,8 +11,8 @@ const caveat = Caveat({ subsets: ["latin"], weight: ["500"], variable: "--font-h
 
 // metadata = the page's label: browser tab title and the text Google shows.
 export const metadata = {
-  title: "Timilehin Ajala · Logbook",
-  description: "Engineer by training, builder by habit. Notes on engineering and code, kept here.",
+  title: "Timilehin Ajala",
+  description: "Mechanical engineer and web developer in Soest, Germany. Engineer by training, builder by habit.",
 };
 
 export default function RootLayout({ children }) {
