@@ -3,7 +3,7 @@ import { currently } from "@/data/content";
 
 export default function Currently() {
   return (
-    <section>
+    <section id="currently">
       <div className="wrap">
         <SectionHead label="Currently" title="Where I am right now." />
         <div className="now">

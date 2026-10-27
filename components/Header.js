@@ -1,10 +1,6 @@
 import Clock from "./Clock";
-
-const NAV = [
-  { href: "#log", label: "Log" },
-  { href: "#builds", label: "Builds" },
-  { href: "#about", label: "About" },
-];
+import Nav from "./Nav";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
   return (
@@ -13,19 +9,13 @@ export default function Header() {
         <a className="brand" href="#top">
           TIMILEHIN A.<span className="sq" />
         </a>
-        <nav className="nav mono" aria-label="Main">
-          {NAV.map((item) => (
-            <a key={item.href} href={item.href}>
-              {item.label}
-            </a>
-          ))}
-          <a className="contact" href="#elsewhere">
-            Contact
-          </a>
-        </nav>
-        <div className="clock mono">
-          <span className="city">Soest, DE</span>
-          <Clock />
+        <Nav />
+        <div className="bar-end">
+          <div className="clock mono">
+            <span className="city">Soest, DE</span>
+            <Clock />
+          </div>
+          <ThemeToggle />
         </div>
       </div>
     </header>

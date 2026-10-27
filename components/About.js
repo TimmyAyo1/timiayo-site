@@ -2,6 +2,7 @@ import Image from "next/image";
 import { facts } from "@/data/content";
 import photo from "@/public/timi.jpg";
 import Tools from "./Tools";
+import Gears from "./Gears";
 
 export default function About() {
   return (
@@ -26,7 +27,10 @@ export default function About() {
           </figure>
         </div>
         <div>
-          <h2>I like understanding how things work.</h2>
+          <div className="about-head">
+            <h2>I like understanding how things work.</h2>
+            <Gears />
+          </div>
           <div className="about-copy">
             <p>
               Engineering taught me to take things apart before I try to improve them. I work that way

@@ -19,7 +19,7 @@ export default function Builds() {
           ))}
         </div>
         <p className="mono note">
-          Curious about any of these? <a className="say-hi" href="#elsewhere">Say hi ↘</a>
+          Curious about any of these? <a className="say-hi" href="#elsewhere">Say hi <span aria-hidden="true">↘</span></a>
         </p>
       </div>
     </section>

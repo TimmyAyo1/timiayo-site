@@ -18,7 +18,22 @@ export const metadata = {
 export default function RootLayout({ children }) {
   // {children} is the slot where the current page gets inserted.
   return (
-    <html lang="en" className={`${manrope.variable} ${plexMono.variable} ${caveat.variable}`}>
+    // suppressHydrationWarning: the tiny script below may add a
+    // data-theme attribute to <html> before React loads. That's intended.
+    <html
+      lang="en"
+      className={`${manrope.variable} ${plexMono.variable} ${caveat.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        {/* Runs before the page paints, so a saved dark choice never
+            flashes white first. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}`,
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

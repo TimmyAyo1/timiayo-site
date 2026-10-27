@@ -21,9 +21,12 @@
 }
 
 /* Dark mode: same token NAMES, different VALUES.
-   Components never change; only the standard does. */
+   Components never change; only the standard does.
+   1) No saved choice: follow the device setting.
+   2) Saved choice "dark" (the toggle): always dark.
+   A saved "light" choice blocks rule 1. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --paper: #161716;
     --ink: #f3f2ee;
     --muted: #a7aba6;
@@ -35,6 +38,18 @@
     --tape: rgba(255, 180, 140, 0.35);
     color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+    --paper: #161716;
+    --ink: #f3f2ee;
+    --muted: #a7aba6;
+    --line: #3c3f3b;
+    --soft: #222421;
+    --grid: rgba(243, 242, 238, 0.045);
+    --accent: #ff7957;
+    --card: #262825;
+    --tape: rgba(255, 180, 140, 0.35);
+    color-scheme: dark;
 }
 
 /* =========================================================
@@ -124,7 +139,28 @@ h2 {
 .nav a:hover { border-color: var(--line); }
 .nav .contact { border-color: var(--accent); }
 section[id] { scroll-margin-top: 64px; }
+
+/* Hamburger: two lines that turn into an X when open (phones only) */
+.menu-btn {
+  display: none; place-content: center; gap: 6px;
+  width: 40px; height: 40px; margin-right: -8px;
+  background: none; border: 0; cursor: pointer; color: var(--ink);
+}
+.menu-btn span { display: block; width: 22px; height: 2px; background: currentColor; transition: transform .25s; }
+.menu-btn[aria-expanded="true"] span:first-child { transform: translateY(4px) rotate(45deg); }
+.menu-btn[aria-expanded="true"] span:last-child { transform: translateY(-4px) rotate(-45deg); }
+.bar-end { display: flex; align-items: center; gap: 18px; }
 .clock { display: flex; gap: 14px; align-items: center; }
+.theme-btn {
+  display: grid; place-items: center; width: 34px; height: 34px;
+  background: none; border: 1px solid var(--line); color: var(--ink); cursor: pointer;
+  transition: border-color .2s, transform .3s;
+}
+.theme-btn:hover { border-color: var(--accent); transform: rotate(-15deg); }
+.theme-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.theme-btn svg path:only-child { fill: currentColor; stroke: none; }
+/* Smooth colour change when switching themes */
+body, .bar, section, .entry, .build, .tools li { transition: background-color .3s, color .3s, border-color .3s; }
 .clock .live { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
 .clock .live::before {
   content: ""; width: 7px; height: 7px; border-radius: 50%;
@@ -247,13 +283,25 @@ h1 .soft { color: var(--muted); }
 .build h3 { margin: auto 0 0; font-size: 24px; font-weight: 500; letter-spacing: -0.035em; }
 .build p { margin: 0; color: var(--muted); font-size: 15px; }
 .note { margin-top: 16px; }
-.say-hi { color: var(--ink); border-bottom: 2px solid var(--accent); }
+/* Say hi: the orange underline fills up behind the text on hover,
+   and the arrow nudges toward the contact section. */
+.say-hi {
+  color: var(--ink); padding: 2px 4px; margin-left: 4px;
+  background: linear-gradient(var(--accent), var(--accent)) left bottom / 100% 2px no-repeat;
+  transition: background-size .3s cubic-bezier(.2,.8,.2,1), color .3s;
+}
+.say-hi span { display: inline-block; transition: transform .3s; }
+.say-hi:hover { background-size: 100% 100%; color: #161817; }
+.say-hi:hover span { transform: translate(3px, 3px); }
 
 /* =========================================================
    ABOUT  (components/About.js)
    ========================================================= */
 .about { display: grid; grid-template-columns: 240px 1fr; gap: 56px; }
 .about-side { display: flex; flex-direction: column; gap: 34px; }
+.about-head { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.gears { width: 128px; flex: none; fill: none; stroke: var(--muted); stroke-width: 1; stroke-linejoin: round; opacity: .8; }
+.gears .hub { fill: var(--accent); stroke: none; }
 .about-copy { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 28px; }
 .about-copy p { margin: 0; color: var(--muted); line-height: 1.65; }
 .about-copy p:first-child { color: var(--ink); font-size: 19px; line-height: 1.5; }
@@ -342,6 +390,113 @@ h1 .soft { color: var(--muted); }
 .foot { margin-top: 64px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
 
 /* =========================================================
+   SIDE INDEX  (components/SideIndex.js) — wide screens only
+   ========================================================= */
+.side-index { display: none; }
+@media (min-width: 1280px) {
+  .side-index {
+    position: fixed; right: 28px; top: 50%; transform: translateY(-50%); z-index: 4;
+    display: flex; flex-direction: column; gap: 14px; align-items: flex-end;
+    font-size: 11px; color: var(--muted); transition: color .3s;
+  }
+  .side-index a { display: flex; align-items: center; gap: 10px; flex-direction: row-reverse; }
+  .side-index .tick { width: 14px; height: 1px; background: currentColor; transition: width .3s cubic-bezier(.2,.8,.2,1), background .3s, height .3s; }
+  .side-index .label { opacity: 0; transform: translateX(6px); transition: opacity .25s, transform .25s; }
+  /* Labels appear when you hover the index, or for the active section */
+  .side-index:hover .label, .side-index [aria-current] .label { opacity: 1; transform: none; }
+  .side-index a:hover { color: var(--ink); }
+  .side-index [aria-current] { color: var(--ink); }
+  .side-index [aria-current] .tick { width: 32px; height: 2px; background: var(--accent); }
+  /* Over the inverted "Find me" band, flip to the paper colour */
+  .side-index.on-dark, .side-index.on-dark [aria-current], .side-index.on-dark a:hover { color: var(--paper); }
+}
+
+/* =========================================================
+   MOTION
+   Rule of thumb: things move once to arrive, then sit still.
+   Only hover and the live bits (clock dot, path bars) keep moving.
+   ========================================================= */
+@keyframes rise   { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes fade   { from { opacity: 0; } to { opacity: 1; } }
+@keyframes grow   { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* settle uses "translate", not "transform", so the photo keeps its tilt and hover straighten */
+@keyframes settle { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
+
+/* 1. Page load: the hero arrives in a short sequence (about 1s total) */
+.hero h1        { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+.hero h1 .soft  { display: inline-block; animation: rise .7s .15s cubic-bezier(.2,.8,.2,1) both; }
+.hero .sub      { animation: rise .6s .3s cubic-bezier(.2,.8,.2,1) both; }
+.quals li       { animation: fade .5s both; }
+.quals li:nth-child(1) { animation-delay: .45s; }
+.quals li:nth-child(2) { animation-delay: .55s; }
+.quals li:nth-child(3) { animation-delay: .65s; }
+.hero .jump     { animation: fade .6s .8s both; }
+
+/* 2. Path bars fill from the left, one after another */
+.quals .bar i { transform-origin: left; }
+.quals .done .bar i    { animation: grow .8s .6s cubic-bezier(.6,0,.2,1) both; }
+.quals .ongoing .bar i { animation: grow .8s .7s cubic-bezier(.6,0,.2,1) both, flow 1.6s 1.5s linear infinite; }
+.quals .active .bar i  { animation: grow .8s .8s cubic-bezier(.6,0,.2,1) both; }
+
+/* 3. Sections rise gently as they scroll into view (CSS only;
+      browsers without scroll timelines just show them). */
+@supports (animation-timeline: view()) {
+  .sec-head, .now, .log, .builds, .about-copy > p, .facts, .elsewhere h2, .channels {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 35%;
+  }
+  .photo {
+    animation: settle linear both;
+    animation-timeline: view();
+    animation-range: entry 10% entry 55%;
+  }
+}
+
+/* 4. Hover details */
+.entry .go { display: inline-block; transition: transform .25s; }
+.entry:hover .go { transform: translate(3px, -3px); color: var(--accent); }
+
+.build { position: relative; transition: background .25s; }
+.build::before {
+  content: ""; position: absolute; left: 0; top: 0; height: 2px; width: 100%;
+  background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .35s cubic-bezier(.2,.8,.2,1);
+}
+.build:hover { background: var(--soft); }
+.build:hover::before { transform: scaleX(1); }
+.build h3 { transition: transform .3s; }
+.build:hover h3 { transform: translateX(4px); }
+
+.channel .arrow { display: inline-block; transition: transform .25s; }
+.channel:hover .arrow { transform: translate(4px, -4px); }
+
+.jump { transition: letter-spacing .25s; }
+.jump:hover { letter-spacing: .12em; }
+
+/* "Find me" (top bar): same highlighter as "Say hi" — the orange
+   underline rises to fill the word, the arrow points down to the links. */
+.nav .contact {
+  padding: 4px 6px; margin-left: -2px;
+  background: linear-gradient(var(--accent), var(--accent)) left bottom / 100% 2px no-repeat;
+  border-bottom: 0;
+  transition: background-size .3s cubic-bezier(.2,.8,.2,1), color .3s;
+}
+.nav .contact .arrow { display: inline-block; margin-left: 4px; transition: transform .3s; }
+.nav .contact:hover { background-size: 100% 100%; color: #161817; }
+.nav .contact:hover .arrow { transform: translate(2px, 2px); }
+
+/* "Back to top": the underline draws in from the left and the arrow
+   keeps hopping upward while you hover. */
+.back-top {
+  background: linear-gradient(var(--accent), var(--accent)) left bottom / 0% 1px no-repeat;
+  padding-bottom: 3px; transition: background-size .35s cubic-bezier(.2,.8,.2,1), color .3s;
+}
+.back-top span { display: inline-block; margin-left: 4px; color: var(--accent); }
+.back-top:hover { background-size: 100% 1px; color: var(--paper); }
+.back-top:hover span { animation: hop .7s cubic-bezier(.3,0,.3,1) infinite; }
+@keyframes hop { 0%, 100% { transform: none; } 45% { transform: translateY(-5px); } }
+
+/* =========================================================
    PHONES
    ========================================================= */
 @media (max-width: 760px) {
@@ -350,8 +505,22 @@ h1 .soft { color: var(--muted); }
   .intro, .sec-head, .about, .about-copy { grid-template-columns: 1fr; gap: 20px; }
   .jump { justify-self: start; }
   .clock { display: none; }
-  .nav { gap: 16px; }
-  .nav a:not(.contact):not([href="#log"]) { display: none; }
+  .bar-end { margin-left: auto; margin-right: 6px; }
+  .menu-btn { display: grid; order: 3; }
+  .nav {
+    position: absolute; top: 64px; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 8px 24px 20px; font-size: 14px;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    box-shadow: 0 18px 30px -24px rgba(0,0,0,.35);
+    opacity: 0; transform: translateY(-8px); visibility: hidden;
+    transition: opacity .2s, transform .2s, visibility .2s;
+  }
+  .nav.open { opacity: 1; transform: none; visibility: visible; }
+  .nav a { padding-block: 14px; border-bottom: 1px solid var(--line); }
+  .nav a:hover { border-color: var(--line); }
+  .nav .contact { border-bottom: 0; color: var(--accent); background: none; padding: 14px 0; margin: 0; }
+  .nav .contact:hover { color: var(--accent); }
   .quals li { grid-template-columns: 10px 1fr; gap: 8px 14px; }
   .quals .bar { grid-column: 1 / -1; }
   .now { grid-template-columns: 1fr 1fr; }
@@ -365,6 +534,7 @@ h1 .soft { color: var(--muted); }
   .build { border-right: 0 !important; border-bottom: 1px solid var(--line) !important; }
   .build:last-child { border-bottom: 0 !important; }
   .photo { max-width: 220px; margin-left: 8px; }
+  .gears { width: 88px; }
   .channel { grid-template-columns: 1fr auto; gap: 6px 14px; }
   .channel > .mono { grid-column: 1 / -1; }
 }

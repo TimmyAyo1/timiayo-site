@@ -25,7 +25,9 @@ export default function Elsewhere() {
         <div className="foot mono">
           <span>© 2026 Timilehin A.</span>
           <span>Soest, Germany</span>
-          <a href="#top">Back to top ↑</a>
+          <a className="back-top" href="#top">
+            Back to top <span aria-hidden="true">↑</span>
+          </a>
         </div>
       </div>
     </section>

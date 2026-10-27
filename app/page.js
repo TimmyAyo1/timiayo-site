@@ -7,16 +7,18 @@ import Log from "@/components/Log";
 import Builds from "@/components/Builds";
 import About from "@/components/About";
 import Elsewhere from "@/components/Elsewhere";
+import SideIndex from "@/components/SideIndex";
 
 export default function Home() {
   return (
     <>
       <Header />
+      <SideIndex />
       <main id="top">
         <Hero />
         <Currently />
-        <Builds />
         <Log />
+        <Builds />
         <About />
         <Elsewhere />
       </main>
